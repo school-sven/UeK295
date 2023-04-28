@@ -10,8 +10,6 @@ import { ArticleUpdateDto } from '../dto/article-update.dto';
 const todo: ArticleEntity = {
   id: 1,
   name: 'Mein Artikel',
-  created: new Date(),
-  updated: new Date(),
 };
 
 describe('ArticleService', () => {
@@ -62,8 +60,6 @@ describe('ArticleService', () => {
     const obj = await service.replace(0, 1, {
       id: 1,
       name: 'Mein Artikel',
-      created: new Date(),
-      updated: new Date(),
     });
     expect(obj).toEqual(todo);
   });
@@ -74,8 +70,6 @@ describe('ArticleService', () => {
       await service.replace(0, 1, {
         id: 2,
         name: 'Mein Artikel',
-        created: new Date(),
-        updated: new Date(),
       });
     } catch (err: any) {
       expect(err instanceof BadRequestException).toEqual(true);
@@ -91,8 +85,6 @@ describe('ArticleService', () => {
       await service.replace(0, 2, {
         id: 2,
         name: 'Mein Artikel',
-        created: new Date(),
-        updated: new Date(),
       });
     } catch (err: any) {
       expect(err instanceof MethodNotAllowedException).toEqual(true);
@@ -108,8 +100,6 @@ describe('ArticleService', () => {
       await service.replace(0, 2, {
         id: 2,
         name: null,
-        created: new Date(),
-        updated: new Date(),
       });
     } catch (err: any) {
       expect(err instanceof BadRequestException).toEqual(true);

@@ -3,11 +3,9 @@ import { INestApplication } from '@nestjs/common';
 import { TestLogger } from './logger.tools';
 import { AuthService } from '../../src/sample/modules/auth/auth.service/auth.service';
 import { loginDtoAdmin, loginDtoUser } from '../security.e2e-spec';
-import { ResetService } from '../../src/sample/modules/reset/reset.service/reset.service';
 
 export class TestHttpClient {
   private readonly httpServer;
-  private resetService: ResetService;
   private authService: AuthService;
 
   userToken = '';
@@ -19,21 +17,14 @@ export class TestHttpClient {
     // add a testLogger
     app.useLogger(new TestLogger());
     // get the services
-    this.resetService = app.get(ResetService);
+    // this.resetService = app.get(ResetService);
     this.authService = app.get(AuthService);
   }
 
-  async createTokenAndResetTable() {
+  async createTokens() {
     // get the tokens
     this.userToken = (await this.authService.login(-1, loginDtoUser)).token;
     this.adminToken = (await this.authService.login(-1, loginDtoAdmin)).token;
-    // reset table
-    await this.resetTable();
-  }
-
-  async resetTable() {
-    // reset table
-    await this.resetService.resetTable(-1, this.tableName);
   }
 
   get(token: string) {

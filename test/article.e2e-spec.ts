@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config();
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
@@ -24,12 +27,11 @@ describe('Article (e2e)', () => {
     await app.init();
     // init httpClient
     httpClient = new TestHttpClient(app, tableName);
-    await httpClient.createTokenAndResetTable();
+    // prepare tokens
+    await httpClient.createTokens();
   });
 
   afterAll(async () => {
-    // reset table
-    await httpClient.resetTable();
     await Promise.all([app.close()]);
   });
 
@@ -68,10 +70,8 @@ describe('Article (e2e)', () => {
 
     // post new valid
     const articleReturnDto: ArticleReturnDto = {
-      created: new Date(),
       id: 1,
       name: 'sample content',
-      updated: new Date(),
     };
     const articleCreateDto1: ArticleCreateDto = {
       name: articleReturnDto.name,
@@ -79,8 +79,6 @@ describe('Article (e2e)', () => {
     status = 201;
     await httpClient.exePost(httpClient.userToken, status, articleCreateDto1).expect((res) => {
       const body: ArticleReturnDto = res.body;
-      expect(body).toHaveProperty('created');
-      expect(body).toHaveProperty('updated');
       expect(body.id).toBe(1);
       expect(body.name).toBe(articleReturnDto.name);
     });
@@ -91,8 +89,6 @@ describe('Article (e2e)', () => {
     };
     await httpClient.exePost(httpClient.userToken, status, articleCreateDto2).expect((res) => {
       const body: ArticleReturnDto = res.body;
-      expect(body).toHaveProperty('created');
-      expect(body).toHaveProperty('updated');
       expect(body.id).toBe(2);
       expect(body.name).toBe(name2);
     });
@@ -146,8 +142,6 @@ describe('Article (e2e)', () => {
       })
       .expect((res) => {
         const body: ArticleReturnDto = res.body;
-        expect(body).toHaveProperty('created');
-        expect(body).toHaveProperty('updated');
         expect(body.id).toBe(1);
         expect(body.name).toBe('new sample content');
       });
@@ -160,8 +154,6 @@ describe('Article (e2e)', () => {
       })
       .expect((res) => {
         const body: ArticleReturnDto = res.body;
-        expect(body).toHaveProperty('created');
-        expect(body).toHaveProperty('updated');
         expect(body.id).toBe(1);
         expect(body.name).toBe('patched name');
       });
@@ -188,8 +180,6 @@ describe('Article (e2e)', () => {
     status = 200;
     await httpClient.execDel(httpClient.adminToken, status, 1).expect((res) => {
       const body: ArticleReturnDto = res.body;
-      expect(body).toHaveProperty('created');
-      expect(body).toHaveProperty('updated');
       expect(body.id).toBe(1);
       expect(body.name).toBe('patched name');
     });
@@ -201,8 +191,6 @@ describe('Article (e2e)', () => {
     status = 200;
     await httpClient.execDel(httpClient.adminToken, status, 2).expect((res) => {
       const body: ArticleReturnDto = res.body;
-      expect(body).toHaveProperty('created');
-      expect(body).toHaveProperty('updated');
       expect(body.id).toBe(2);
       expect(body.name).toBe('sample content 2');
     });

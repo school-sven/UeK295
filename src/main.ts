@@ -28,6 +28,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
 
   // hint: add openApi
+
   // wir starten den Server
   await app.listen(port, httpInterface);
 

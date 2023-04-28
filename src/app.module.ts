@@ -1,6 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as process from 'process';
 
 import { LoggerMiddleware } from './sample/midleware/logger.middleware';
 import { ArticleModule } from './sample/modules/article/article.module';
@@ -15,15 +14,14 @@ import { ResetModule } from './sample/modules/reset/reset.module';
     RootModule,
     ResetModule,
     TypeOrmModule.forRoot({
-      type: 'mariadb',
-      host: process.env.DB_SERVER || 'localhost',
-      port: parseInt(process.env.DB_PORT || '3306'),
-      username: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || 'rootpwd',
-      database: process.env.DB_DATABASE || 'api',
-      autoLoadEntities: true,
+      type: 'better-sqlite3',
+      database: ':memory:',
+      dropSchema: false,
       // todo: achtung nicht benutzen in der Produktion
       synchronize: true,
+      entities: [],
+      autoLoadEntities: true,
+      logging: false,
     }),
   ],
 })

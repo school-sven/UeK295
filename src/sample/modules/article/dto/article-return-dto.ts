@@ -15,14 +15,6 @@ export class ArticleReturnDto {
     example: 'Beispiel Artikel',
   })
   name: string;
-  @ApiProperty({
-    description: 'Datum wann der Artikel erzeugt wurde',
-  })
-  created: Date;
-  @ApiProperty({
-    description: 'Datum wann der Artikel verändert wurde',
-  })
-  updated: Date;
   static ConvertEntityToDto(entity: ArticleEntity): ArticleReturnDto {
     return entity as ArticleReturnDto;
   }

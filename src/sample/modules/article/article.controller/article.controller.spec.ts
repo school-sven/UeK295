@@ -20,8 +20,6 @@ const adminUser: UserEntity = {
 const articleId1: ArticleEntity = {
   id: 1,
   name: 'Mein Artikel',
-  created: new Date(),
-  updated: new Date(),
 };
 class ArticleServiceMockup {
   findAll() {

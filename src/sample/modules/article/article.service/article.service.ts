@@ -40,7 +40,7 @@ export class ArticleService extends BaseService {
     const method = 'create';
     this.wl(corrId, method);
     // extend the createDto with the timestamp
-    const article: ArticleEntity = { ...createArticleEntity, id: null, created: null, updated: null };
+    const article: ArticleEntity = { ...createArticleEntity, id: null };
     // check if all required fields are set, if not the method is throw an error
     this.checkForAllRequiredProperties(corrId, article);
     // create the object and convert the return value to the right datatype
@@ -151,8 +151,6 @@ export class ArticleService extends BaseService {
     return {
       id: article.id,
       name: article.name,
-      created: article.created,
-      updated: article.updated,
     };
   }
 }

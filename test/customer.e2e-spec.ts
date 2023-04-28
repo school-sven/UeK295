@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config();
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
@@ -9,7 +12,6 @@ describe('Customer (e2e)', () => {
   const tableName = 'customer';
   let app: INestApplication;
   let httpClient: TestHttpClient;
-
   // temp values
   let status = 0;
   let answer: unknown;
@@ -24,12 +26,11 @@ describe('Customer (e2e)', () => {
     await app.init();
     // init httpClient
     httpClient = new TestHttpClient(app, tableName);
-    await httpClient.createTokenAndResetTable();
+    // prepare tokens
+    await httpClient.createTokens();
   });
 
   afterAll(async () => {
-    // reset table
-    await httpClient.resetTable();
     await Promise.all([app.close()]);
   });
 
@@ -83,8 +84,6 @@ describe('Customer (e2e)', () => {
       name: 'name 1',
       zipCode: 1,
       id: 1,
-      updated: new Date(),
-      created: new Date(),
     };
     const customerCreateDto1: CustomerCreateDto = {
       address: customerReturnDto.address,
@@ -95,8 +94,6 @@ describe('Customer (e2e)', () => {
     status = 201;
     await httpClient.exePost(httpClient.userToken, status, customerCreateDto1).expect((res) => {
       const body: CustomerReturnDto = res.body;
-      expect(body).toHaveProperty('created');
-      expect(body).toHaveProperty('updated');
       expect(body.id).toBe(1);
       expect(body.name).toBe(customerReturnDto.name);
       expect(body.address).toBe(customerReturnDto.address);
@@ -108,8 +105,6 @@ describe('Customer (e2e)', () => {
     const customerCreateDto2: CustomerCreateDto = { ...customerCreateDto1, name: name2 };
     await httpClient.exePost(httpClient.userToken, status, customerCreateDto2).expect((res) => {
       const body: CustomerReturnDto = res.body;
-      expect(body).toHaveProperty('created');
-      expect(body).toHaveProperty('updated');
       expect(body.id).toBe(2);
       expect(body.name).toBe(name2);
       expect(body.address).toBe(customerReturnDto.address);
@@ -182,8 +177,6 @@ describe('Customer (e2e)', () => {
       })
       .expect((res) => {
         const body: CustomerReturnDto = res.body;
-        expect(body).toHaveProperty('created');
-        expect(body).toHaveProperty('updated');
         expect(body.id).toBe(1);
         expect(body.name).toBe(name3);
         expect(body.address).toBe(customerReturnDto.address);
@@ -200,8 +193,6 @@ describe('Customer (e2e)', () => {
       })
       .expect((res) => {
         const body: CustomerReturnDto = res.body;
-        expect(body).toHaveProperty('created');
-        expect(body).toHaveProperty('updated');
         expect(body.id).toBe(1);
         expect(body.name).toBe(customerReturnDto.name);
         expect(body.city).toBe(city);
@@ -218,8 +209,6 @@ describe('Customer (e2e)', () => {
       })
       .expect((res) => {
         const body: CustomerReturnDto = res.body;
-        expect(body).toHaveProperty('created');
-        expect(body).toHaveProperty('updated');
         expect(body.id).toBe(1);
         expect(body.name).toBe(customerReturnDto.name);
         expect(body.city).toBe(city);
@@ -236,8 +225,6 @@ describe('Customer (e2e)', () => {
       })
       .expect((res) => {
         const body: CustomerReturnDto = res.body;
-        expect(body).toHaveProperty('created');
-        expect(body).toHaveProperty('updated');
         expect(body.id).toBe(1);
         expect(body.name).toBe(customerReturnDto.name);
         expect(body.city).toBe(city);
@@ -267,8 +254,6 @@ describe('Customer (e2e)', () => {
     status = 200;
     await httpClient.execDel(httpClient.adminToken, status, 1).expect((res) => {
       const body: CustomerReturnDto = res.body;
-      expect(body).toHaveProperty('created');
-      expect(body).toHaveProperty('updated');
       expect(body.id).toBe(1);
       expect(body.name).toBe(customerReturnDto.name);
       expect(body.address).toBe(address);
@@ -283,8 +268,6 @@ describe('Customer (e2e)', () => {
     status = 200;
     await httpClient.execDel(httpClient.adminToken, status, 2).expect((res) => {
       const body: CustomerReturnDto = res.body;
-      expect(body).toHaveProperty('created');
-      expect(body).toHaveProperty('updated');
       expect(body.id).toBe(2);
       expect(body.name).toBe(customerCreateDto2.name);
       expect(body.address).toBe(customerCreateDto2.address);

@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config();
+
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
@@ -6,6 +9,7 @@ import { LoginDto } from '../src/sample/generic.dtos/login.dto';
 import { BearerDto } from '../src/sample/generic.dtos/bearer.dto';
 import { UserReturnDto } from '../src/sample/generic.dtos/userDtoAndEntity';
 import { TestLogger } from './testing-tools/logger.tools';
+import { TestHttpClient } from './testing-tools/test-http-client';
 export const loginDtoUser: LoginDto = {
   username: 'user',
   password: '12345',
@@ -16,8 +20,7 @@ export const loginDtoAdmin: LoginDto = {
 };
 describe('AppController Security (e2e)', () => {
   let app: INestApplication;
-  let userToken = '';
-  let adminToken = '';
+  let httpClient: TestHttpClient;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -26,7 +29,12 @@ describe('AppController Security (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useLogger(new TestLogger());
+    // init app
     await app.init();
+    // init httpClient
+    httpClient = new TestHttpClient(app, '');
+    // prepare tokens
+    await httpClient.createTokens();
   });
 
   afterAll(async () => {
@@ -71,7 +79,7 @@ describe('AppController Security (e2e)', () => {
       .then((res) => {
         const body: BearerDto = res.body;
         expect(body.token).toBeDefined();
-        userToken = body.token;
+        httpClient.userToken = body.token;
       });
   });
 
@@ -83,14 +91,14 @@ describe('AppController Security (e2e)', () => {
       .then((res) => {
         const body: BearerDto = res.body;
         expect(body.token).toBeDefined();
-        adminToken = body.token;
+        httpClient.adminToken = body.token;
       });
   });
 
   it('/auth/profile user (GET)', () => {
     return request(app.getHttpServer())
       .get('/auth/profile')
-      .set('Authorization', `Bearer ${userToken}`)
+      .set('Authorization', `Bearer ${httpClient.userToken}`)
       .expect(200)
       .then((res) => {
         const body: UserReturnDto = res.body;
@@ -103,7 +111,7 @@ describe('AppController Security (e2e)', () => {
   it('/auth/profile admin (GET)', () => {
     return request(app.getHttpServer())
       .get('/auth/profile')
-      .set('Authorization', `Bearer ${adminToken}`)
+      .set('Authorization', `Bearer ${httpClient.adminToken}`)
       .expect(200)
       .then((res) => {
         const body: UserReturnDto = res.body;

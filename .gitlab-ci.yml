@@ -1,6 +1,7 @@
 stages:
   - lint
   - unit-test
+  - e2e-test
   - build
 
 lint:
@@ -22,6 +23,16 @@ unit-test:
     - echo "Running unit tests"
     - npm run test:cov
 
+e2e-test:
+  stage: e2e-test
+  image: node:18-alpine
+  tags:
+    - docker
+  script:
+    - npm ci
+    - echo "Running e2e tests"
+    - npm run test:e2e
+
 build:
   stage: build
   image: node:18-alpine
@@ -32,14 +43,3 @@ build:
     - echo "Running npm build"
     - npm run build
 
-
-#build:
-#  stage: build
-#  image: docker:dind
-#  tags:
-#    - docker
-#  script:
-#    - echo $CI_REGISTRY
-#    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-#    - docker build -t $CI_REGISTRY/api:latest .
-#    - docker push $CI_REGISTRY/api:latest

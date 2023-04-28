@@ -1,0 +1,54 @@
+version: '3.9'
+
+services:
+  api-demo-mariadb:
+    image: mariadb
+    hostname: api-demo-mariadb
+    container_name: api-demo-mariadb
+    networks:
+      - backend
+    environment:
+      MYSQL_ROOT_PASSWORD: rootPwd
+      MYSQL_DATABASE: api
+      MYSQL_USER: dbUser
+      MYSQL_PASSWORD: dbPwd
+    restart: always
+  api-demo:
+    image: dirkdecher/api-demo
+    depends_on:
+      - api-demo-mariadb
+    hostname: api-demo
+    container_name: api-demo
+    restart: always
+    networks:
+      - frontend
+      - backend
+    ports:
+      - "3010:3000"
+    environment:
+      - SERVER_PROTOCOL=http
+      - SERVER_LISTEN_ON=0.0.0.0
+      - URI_SERVER=localhost
+      - SERVER_PORT=3000
+      - API_NAME=api
+
+      - JWT_SECRET="DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE."
+      - JWT_EXPIRES_IN_S=300
+
+      - DB_SERVER=api-demo-mariadb
+      - DB_PORT=3306
+      - DB_USER=dbUser
+      - DB_PASSWORD=dbPwd
+      - DB_DATABASE=api
+
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://api-demo:3000/healthcheck" ]
+      interval: 3s
+      timeout: 2s
+      retries: 4
+      start_period: 5s
+
+networks:
+  frontend:
+    driver: bridge
+  backend:

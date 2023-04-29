@@ -13,15 +13,17 @@ import { ResetModule } from './sample/modules/reset/reset.module';
     AuthModule,
     RootModule,
     ResetModule,
-    TypeOrmModule.forRoot({
-      type: 'better-sqlite3',
-      database: ':memory:',
-      dropSchema: false,
-      // todo: achtung nicht benutzen in der Produktion
-      synchronize: true,
-      entities: [],
-      autoLoadEntities: true,
-      logging: false,
+    TypeOrmModule.forRootAsync({
+      useFactory: () => ({
+        type: 'better-sqlite3',
+        database: process.env.DATABASE_NAME || 'database/api.sqlite',
+        dropSchema: true,
+        entities: [],
+        autoLoadEntities: true,
+        logging: process.env.DATABASE_LOG?.toLowerCase() === 'true' || false,
+        // todo: achtung nicht benutzen in der Produktion
+        synchronize: true,
+      }),
     }),
   ],
 })

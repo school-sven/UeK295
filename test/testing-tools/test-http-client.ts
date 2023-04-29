@@ -3,10 +3,12 @@ import { INestApplication } from '@nestjs/common';
 import { TestLogger } from './logger.tools';
 import { AuthService } from '../../src/sample/modules/auth/auth.service/auth.service';
 import { loginDtoAdmin, loginDtoUser } from '../security.e2e-spec';
+import { ResetService } from '../../src/sample/modules/reset/reset.service/reset.service';
 
 export class TestHttpClient {
   private readonly httpServer;
   private authService: AuthService;
+  private resetService: ResetService;
 
   userToken = '';
   adminToken = '';
@@ -17,8 +19,13 @@ export class TestHttpClient {
     // add a testLogger
     app.useLogger(new TestLogger());
     // get the services
-    // this.resetService = app.get(ResetService);
+    this.resetService = app.get(ResetService);
     this.authService = app.get(AuthService);
+
+    // reset database if a tableName is set
+    if (tableName && tableName.length > 0) {
+      this.resetTestDatabase(tableName).finally();
+    }
   }
 
   async createTokens() {
@@ -93,5 +100,10 @@ export class TestHttpClient {
 
   execDel(token: string, status: number, id: number) {
     return this.del(token, id).expect(status);
+  }
+
+  private async resetTestDatabase(tableName: string) {
+    // clear the table
+    await this.resetService.resetTable(-1, tableName);
   }
 }

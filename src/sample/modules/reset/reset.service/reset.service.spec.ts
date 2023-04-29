@@ -3,7 +3,7 @@ import { ResetService } from './reset.service';
 import { MockType } from '../../../mocktypes/mocktype';
 import { DataSource } from 'typeorm';
 import { getDataSourceToken } from '@nestjs/typeorm';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 export const dataSourceMockFactory: () => MockType<DataSource> = jest.fn(() => ({
   query: jest.fn((entity) => entity),
@@ -30,19 +30,13 @@ describe('root.service', () => {
     expect(service).toBeDefined();
   });
 
-  it('Reset Table not found', async () => {
-    try {
-      dataSourceMock.query.mockImplementation(() => {
-        throw new NotFoundException();
-      });
-      await service.resetTable(0, 'test');
-    } catch (err: any) {
-      expect(err instanceof BadRequestException).toEqual(true);
-      expect(err.message).toEqual('Table test not found!');
-    }
+  it('Reset Table test not found', async () => {
+    dataSourceMock.query.mockReturnValue([]);
+    expect(service.resetTable(0, 'test')).rejects.toBeInstanceOf(NotFoundException);
   });
-  it('Reset Table found', async () => {
-    dataSourceMock.query.mockReturnValue(null);
+  it('Reset Table test found', async () => {
+    dataSourceMock.query.mockReturnValue(['test']);
+    // dataSourceMock.query.mockReturnValue(true);
     expect(await service.resetTable(0, 'test')).toEqual('Reset table test done!');
   });
 });

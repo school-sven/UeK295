@@ -7,17 +7,28 @@ import { AppModule } from '../src/app.module';
 import { ArticleReturnDto } from '../src/sample/modules/article/dto/article-return-dto';
 import { ArticleCreateDto } from '../src/sample/modules/article/dto/article-create.dto';
 import { TestHttpClient } from './testing-tools/test-http-client';
+import { DbFileTools } from './testing-tools/db-file.tools';
 
 describe('Article (e2e)', () => {
   const tableName = 'article';
   let app: INestApplication;
   let httpClient: TestHttpClient;
 
+  // set environment and delete the file
+  const dbName = DbFileTools.resetTestDatabase(tableName);
+  if (!dbName) {
+    console.warn(`could not delete database ${dbName}`);
+  }
+  process.env.DATABASE_NAME = dbName;
+  // we override here the default log behaviour for the database so we don't see sql messages
+  process.env.DATABASE_LOG = 'false';
+
   // temp values
   let status = 0;
   let answer: unknown;
 
   beforeAll(async () => {
+    // delete the database
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();

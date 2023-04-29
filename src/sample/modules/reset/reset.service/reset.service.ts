@@ -20,22 +20,14 @@ export class ResetService extends BaseService {
       throw new NotFoundException(msg);
     }
 
-    // this.wl(corrId, method, `truncate table ${tableName} done!`);
-    const sqlDelete = 'delete from article where id is not null;';
+    // todo hint: Das ist wirklich ganz schlecht. Wir machen hier die Türe auf für SQL injection..... also bitte in einer Produktion nicht so verwenden
+    const sqlDelete = `delete from ${tableName};`;
     await this.dataSource.query(sqlDelete);
     const sqlVaccum = 'vacuum';
     await this.dataSource.query(sqlVaccum);
-
     this.wl(corrId, method, `alter Autoincrement on table ${tableName} done!`);
-    const sqlResetSequence = "delete from sqlite_sequence where name='article'";
+    const sqlResetSequence = `delete from sqlite_sequence where name='${tableName}'`;
     await this.dataSource.query(sqlResetSequence);
-    // // hint: Das ist wirklich ganz schlecht. Wir machen hier die Türe auf für SQL injection.....
-    // const queryDrop = `delete from ${tableName};`;
-    // await this.dataSource.query(queryDrop);
-    // // hint: Das ist wirklich ganz schlecht. Wir machen hier die Türe auf für SQL injection.....
-    // this.wl(corrId, method, `truncate table ${tableName} done!`);
-    // const queryResetAutoincrement = `ALTER TABLE ${tableName} AUTO_INCREMENT = 0;`;
-    // await this.dataSource.query(queryResetAutoincrement);
     return `Reset table ${tableName} done!`;
   }
 }

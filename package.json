@@ -1,8 +1,8 @@
 {
   "name": "api",
-  "version": "1.0.0",
-  "description": "final api [Dein Name bzw. Eure Namen] uek-295",
-  "author": "Teacher|https://wiki.ict-uek.ch/|teacher@ict-uek.ch",
+  "version": "1.0.6",
+  "description": "REST api-Sven ÜK-295 Klasse Inf21a",
+  "author": "Sven Märki | https://www.akb.ch | sven.maerki@akb.ch",
   "private": true,
   "license": "MIT|https://opensource.org/license/mit",
   "scripts": {

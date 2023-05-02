@@ -6,6 +6,7 @@ import { ArticleModule } from './sample/modules/article/article.module';
 import { AuthModule } from './sample/modules/auth/auth.module';
 import { RootModule } from './sample/modules/root/root.module';
 import { ResetModule } from './sample/modules/reset/reset.module';
+import { TodoModule } from './todo/todo.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ResetModule } from './sample/modules/reset/reset.module';
     AuthModule,
     RootModule,
     ResetModule,
+    TodoModule,
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         type: 'better-sqlite3',

@@ -10,6 +10,7 @@ lint:
   tags:
     - docker
   script:
+    - echo "Running lint"
     - npm ci
     - npm run lint
 
@@ -19,6 +20,7 @@ unit-test:
   tags:
     - docker
   script:
+    - echo "Running unit tests"
     - npm ci
     - echo "Running unit tests"
     - npm run test:cov
@@ -29,6 +31,7 @@ e2e-test:
   tags:
     - docker
   script:
+    - echo "Running e2e tests"
     - npm ci
     - echo "Running e2e tests"
     - npm run test:e2e
@@ -39,6 +42,7 @@ build:
   tags:
     - docker
   script:
+    - echo "Running npm build"
     - npm ci
     - echo "Running npm build"
     - npm run build

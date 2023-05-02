@@ -7,12 +7,13 @@ import { AuthService } from './auth.service/auth.service';
 import { AuthController } from './auth.controller/auth.controller';
 import { ProfileController } from './profile.controller/profile.controller';
 import { UserService } from './user.service/user.service';
+import { Security } from '../../../security';
 
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'No secret set...',
+      secret: Security.secret || 'No secret set...',
       signOptions: { expiresIn: `${parseInt(process.env.JWT_EXPIRES_IN_S || '60)', 10)}s` },
     }),
   ],

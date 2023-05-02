@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TodoEntity } from '../entities/todo.entity';
 
 export class TodoDto {
   @ApiProperty({
@@ -29,4 +30,8 @@ export class TodoDto {
     example: false,
   })
   closed: boolean;
+
+  static ConvertEntityToDto(entity: TodoEntity): TodoDto {
+    return entity as TodoDto;
+  }
 }

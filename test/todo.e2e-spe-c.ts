@@ -1,13 +1,13 @@
 import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-dotenv.config();
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
-import { TodoReturnDto } from '../src/todo/dto/todo-return-dto';
-import { TodoCreateDto } from '../src/todo/dto/todo-create.dto';
 import { TestHttpClient } from './testing-tools/test-http-client';
 import { DbFileTools } from './testing-tools/db-file.tools';
+import { TodoDto } from '../src/todo/dto/todo.dto';
+import { CreateTodoDto } from '../src/todo/dto/create-todo.dto';
+
+dotenv.config();
 
 describe('Todo (e2e)', () => {
   const tableName = 'todo';
@@ -89,28 +89,28 @@ describe('Todo (e2e)', () => {
     await httpClient.exePost(httpClient.adminToken, status, { id: 1, description: 'test description' }).expect(answer);
 
     // post new valid
-    const todoReturnDto: TodoReturnDto = {
+    const todoReturnDto: TodoDto = {
       id: 1,
       title: 'title',
       description: 'sample content',
       closed: false,
     };
-    const todoCreateDto1: TodoCreateDto = {
+    const todoCreateDto1: CreateTodoDto = {
       description: todoReturnDto.description,
       title: todoReturnDto.title,
     };
     status = 201;
     await httpClient.exePost(httpClient.userToken, status, todoCreateDto1).expect((res) => {
-      const body: TodoReturnDto = res.body;
+      const body: TodoDto = res.body;
       expect(body.id).toBe(1);
       expect(body.title).toBe(todoReturnDto.title);
       expect(body.description).toBe(todoReturnDto.description);
     });
 
     const title2 = todoReturnDto.title + ' 2';
-    const todoCreateDto2: TodoCreateDto = { ...todoCreateDto1, title: title2 };
+    const todoCreateDto2: CreateTodoDto = { ...todoCreateDto1, title: title2 };
     await httpClient.exePost(httpClient.userToken, status, todoCreateDto2).expect((res) => {
-      const body: TodoReturnDto = res.body;
+      const body: TodoDto = res.body;
       expect(body.id).toBe(2);
       expect(body.title).toBe(title2);
       expect(body.description).toBe(todoReturnDto.description);
@@ -122,7 +122,7 @@ describe('Todo (e2e)', () => {
     // put valid (id 1)
     status = 200;
     httpClient.execPut(httpClient.userToken, status, 1, { ...todoReturnDto, title: 'updated title' }).expect((res) => {
-      const body: TodoReturnDto = res.body;
+      const body: TodoDto = res.body;
       expect(body.id).toBe(1);
       expect(body.title).toBe('updated title');
       expect(body.description).toBe(todoReturnDto.description);
@@ -175,7 +175,7 @@ describe('Todo (e2e)', () => {
         additionalInformation: { info: 'some information', info2: 4 },
       })
       .expect((res) => {
-        const body: TodoReturnDto = res.body;
+        const body: TodoDto = res.body;
         expect(body.id).toBe(1);
         expect(body.title).toBe('new sample title');
         expect(body.description).toBe(todoReturnDto.description);
@@ -188,7 +188,7 @@ describe('Todo (e2e)', () => {
         description: 'patched content',
       })
       .expect((res) => {
-        const body: TodoReturnDto = res.body;
+        const body: TodoDto = res.body;
         expect(body.id).toBe(1);
         expect(body.title).toBe('title');
         expect(body.description).toBe('patched content');
@@ -215,7 +215,7 @@ describe('Todo (e2e)', () => {
     // Delete existing (id 1)
     status = 200;
     await httpClient.execDel(httpClient.adminToken, status, 1).expect((res) => {
-      const body: TodoReturnDto = res.body;
+      const body: TodoDto = res.body;
       expect(body.id).toBe(1);
       expect(body.title).toBe('title');
       expect(body.description).toBe('patched content');
@@ -227,7 +227,7 @@ describe('Todo (e2e)', () => {
     // Delete existing (id 2)
     status = 200;
     await httpClient.execDel(httpClient.adminToken, status, 2).expect((res) => {
-      const body: TodoReturnDto = res.body;
+      const body: TodoDto = res.body;
       expect(body.id).toBe(2);
       expect(body.title).toBe('title 2');
       expect(body.description).toBe('sample content');

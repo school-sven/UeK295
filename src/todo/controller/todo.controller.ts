@@ -14,8 +14,10 @@ import {
 import { TodoService } from '../service/todo.service';
 import { CreateTodoDto } from '../dto/create-todo.dto';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -59,13 +61,13 @@ export class TodoController {
     description: 'The record has been successfully created.',
     type: TodoDto,
   })
+  @ApiBadRequestResponse({
+    description: `The required field xxx is missing in the object.`,
+    type: ErrorDto,
+  })
   @ApiUnauthorizedResponse({
     description: 'Not logged in!',
     type: ErrorUnauthorizedDto,
-  })
-  @ApiMethodNotAllowedResponse({
-    description: `You don't have the right to access this record.`,
-    type: ErrorDto,
   })
   async create(@Body() createTodo: CreateTodoDto): Promise<TodoDto> {
     const todo = await this.todoService.create(createTodo);
@@ -97,11 +99,15 @@ export class TodoController {
     description: 'The record has been successfully replaced.',
     type: TodoDto,
   })
+  @ApiBadRequestResponse({
+    description: `The required field xxx is missing in the object.`,
+    type: ErrorDto,
+  })
   @ApiUnauthorizedResponse({
     description: 'Not logged in!',
     type: ErrorUnauthorizedDto,
   })
-  @ApiNotFoundResponse({
+  @ApiMethodNotAllowedResponse({
     description: 'The record has not been found.',
     type: ErrorDto,
   })
@@ -139,12 +145,12 @@ export class TodoController {
     description: 'Not logged in!',
     type: ErrorUnauthorizedDto,
   })
-  @ApiNotFoundResponse({
-    description: 'The record has not been found.',
+  @ApiForbiddenResponse({
+    description: 'Not allowed to delete this record.',
     type: ErrorDto,
   })
-  @ApiMethodNotAllowedResponse({
-    description: 'Not allowed to delete this record.',
+  @ApiNotFoundResponse({
+    description: 'The record has not been found.',
     type: ErrorDto,
   })
   async delete(@CurrentUser() user: UserEntity, @Param('id', ParseIntPipe) id: number): Promise<TodoDto> {

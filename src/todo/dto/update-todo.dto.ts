@@ -1,24 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { CreateTodoDto } from './create-todo.dto';
 
-export class UpdateTodoDto {
-  @ApiProperty({
-    description: 'The title of the todo',
-    default: 'title',
-    example: 'sample title',
-  })
-  title: string;
-
-  @ApiProperty({
-    description: 'The description of the todo',
-    default: 'description',
-    example: 'sample description',
-  })
-  description: string;
-
+export class UpdateTodoDto extends PartialType(CreateTodoDto) {
   @ApiProperty({
     description: 'The task is closed',
     default: false,
     example: false,
+    required: false,
   })
   closed: boolean;
 }

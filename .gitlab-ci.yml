@@ -1,10 +1,9 @@
 image: node:18-alpine
-tags:
-  - docker
 
-.install_dependecies: &install_dependecies
-  - echo "Installing dependencies..."
-  - npm ci
+.install_dependencies: &install_dependencies
+  script:
+    - echo "Installing dependencies..."
+    - npm ci
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -26,28 +25,28 @@ lint:
       - node_modules/
     when: on_success
     policy: pull-push
+  <<: *install_dependencies
   script:
-    - *install_dependecies
     - echo "Running linting..."
     - npm run lint
 
 unit-test:
   stage: unit-test
+  <<: *install_dependencies
   script:
-    - *install_dependecies
     - echo "Running unit tests..."
     - npm run test:cov
 
 e2e-test:
   stage: e2e-test
+  <<: *install_dependencies
   script:
-    - *install_dependecies
     - echo "Running end-to-end tests..."
     - npm run test:e2e
 
 build:
   stage: build
+  <<: *install_dependencies
   script:
-    - *install_dependecies
     - echo "Building project..."
     - npm run build

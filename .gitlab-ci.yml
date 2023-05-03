@@ -1,22 +1,24 @@
-image: node:18-alpine
+default:
+  image: node:18-alpine
+  tags:
+    - docker
 
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
+  key: CI_COMMIT_REF_SLUG
   paths:
     - node_modules/
   policy: pull
 
 stages:
-  - compile
+  - prepare
   - lint
-  - unit-test
-  - e2e-test
+  - test
   - build
 
-compile:
-  stage: compile
-  cache: 
-    key: ${CI_COMMIT_REF_SLUG}
+prepare:
+  stage: prepare
+  cache:
+    key: CI_COMMIT_REF_SLUG
     paths:
       - node_modules/
     when: on_success
@@ -27,24 +29,28 @@ compile:
 
 lint:
   stage: lint
+  needs: [ prepare ]
   script:
     - echo "Running linting..."
     - npm run lint
 
 unit-test:
-  stage: unit-test
+  stage: test
+  needs: [ prepare ]
   script:
     - echo "Running unit tests..."
     - npm run test:cov
 
 e2e-test:
-  stage: e2e-test
+  stage: test
+  needs: [ prepare ]
   script:
     - echo "Running end-to-end tests..."
     - npm run test:e2e
 
 build:
   stage: build
+  needs: [ prepare, lint, unit-test, e2e-test ]
   script:
     - echo "Building project..."
     - npm run build

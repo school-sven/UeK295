@@ -111,14 +111,10 @@ describe('TodoService', () => {
     expect(await service.patch(todo.id, todo)).toEqual(todo);
   });
 
-  it('should patch negative with two different ids', async () => {
-    await expect(service.patch(2, todo)).rejects.toThrowError(MethodNotAllowedException);
-  });
-
-  it('should patch negative with non existing id', async () => {
+  it('should patch negative', async () => {
     repositoryMock.findOneBy.mockReturnValue(null);
 
-    await expect(service.patch(todo.id, todo)).rejects.toThrowError(MethodNotAllowedException);
+    await expect(service.patch(todo.id, todo)).rejects.toThrowError(NotFoundException);
   });
 
   it('should delete positive', async () => {

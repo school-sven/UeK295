@@ -14,8 +14,9 @@ export class TodoService {
   }
 
   async create(createTodo: CreateTodoDto): Promise<TodoEntity> {
-    this.checkIfObjectHasGivenProperties(createTodo, 'title', 'description');
-    return this.todoRepository.save(createTodo);
+    this.checkIfObjectHasGivenProperties(createTodo, 'description', 'title');
+    const id = (await this.todoRepository.insert(createTodo)).identifiers[0];
+    return this.todoRepository.findOneBy(id);
   }
 
   async getOne(id: number) {
@@ -27,13 +28,12 @@ export class TodoService {
   }
 
   async update(id: number, updateTodo: TodoEntity): Promise<TodoEntity> {
-    this.checkIfObjectHasGivenProperties(updateTodo, 'title', 'description', 'closed');
+    this.checkIfObjectHasGivenProperties(updateTodo, 'description', 'title', 'closed');
     if (id !== updateTodo.id) {
       throw new BadRequestException(`The id ${id} is not equal to the object id ${updateTodo.id}!`);
     }
     const todo = await this.todoRepository.findOneBy({ id });
     if (!todo) {
-      // Should be a 404 but the postman test is not working with a 404
       throw new MethodNotAllowedException(`We did not found a todo item with id ${id}!`);
     }
     await this.todoRepository.update({ id }, this.sanitizeTodoObject(updateTodo));
@@ -61,7 +61,7 @@ export class TodoService {
 
   private checkIfObjectHasGivenProperties(obj: any, ...properties: string[]): void {
     properties.forEach((property) => {
-      if (obj[property] === undefined) {
+      if (!obj.hasOwnProperty(property)) {
         throw new BadRequestException(`The required field ${property} is missing in the object!`);
       }
     });

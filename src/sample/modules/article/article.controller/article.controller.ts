@@ -7,14 +7,15 @@ import {
   Param,
   Delete,
   Put,
-  MethodNotAllowedException,
   ParseIntPipe,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiMethodNotAllowedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -112,7 +113,7 @@ export class ArticleController extends BaseController {
   @Delete(':id')
   @ApiOkResponse({ description: 'The record has been successfully deleted.', type: ArticleReturnDto })
   @ApiNotFoundResponse({ description: 'The record has not been found.', type: ErrorDto })
-  @ApiMethodNotAllowedResponse({ description: '', type: ErrorDto })
+  @ApiForbiddenResponse({ description: '', type: ErrorDto })
   @ApiUnauthorizedResponse({ description: 'Not logged in!', type: ErrorUnauthorizedDto })
   async remove(
     @CurrentUser() user: UserEntity,
@@ -126,7 +127,7 @@ export class ArticleController extends BaseController {
       const item = await this.articleService.remove(corrId, id);
       return ArticleReturnDto.ConvertEntityToDto(item);
     } else {
-      throw new MethodNotAllowedException('You have to be member of the role admin to call this method!');
+      throw new ForbiddenException('You have to be member of the role admin to call this method!');
     }
   }
 }

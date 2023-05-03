@@ -20,7 +20,7 @@ describe('Customer (e2e)', () => {
     console.warn(`could not delete database ${dbName}`);
   }
   process.env.DATABASE_NAME = dbName;
-  // we override here the default log behaviour for the database so we don't see sql messages
+  // we override here the default log behaviour for the database, so we don't see sql messages
   process.env.DATABASE_LOG = 'false';
 
   // temp values
@@ -244,11 +244,11 @@ describe('Customer (e2e)', () => {
       });
 
     // delete not allowed
-    status = 405;
+    status = 403;
     answer = {
       statusCode: status,
       message: 'You have to be member of the role admin to call this method!',
-      error: 'Method Not Allowed',
+      error: 'Forbidden',
     };
     await httpClient.execDel(httpClient.userToken, status, -1).expect(answer);
 

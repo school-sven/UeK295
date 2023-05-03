@@ -4,7 +4,12 @@ import { Repository } from 'typeorm';
 import { ArticleEntity } from '../entities/article.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MockType, RepositoryMockFactory } from '../../../mocktypes/mocktype';
-import { BadRequestException, MethodNotAllowedException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+  MethodNotAllowedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ArticleUpdateDto } from '../dto/article-update.dto';
 
 const todo: ArticleEntity = {
@@ -31,6 +36,12 @@ describe('ArticleService', () => {
     const arr = [];
     repositoryMock.find.mockReturnValue(arr);
     expect(await service.findAll(0)).toEqual(arr);
+  });
+  it('findAll error', async () => {
+    repositoryMock.find.mockImplementation(() => {
+      throw new InternalServerErrorException();
+    });
+    expect(service.findAll(0)).rejects.toBeInstanceOf(InternalServerErrorException);
   });
   it('findOne', async () => {
     repositoryMock.findOneBy.mockReturnValue(todo);

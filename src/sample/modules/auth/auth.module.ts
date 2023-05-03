@@ -13,7 +13,7 @@ import { Security } from '../../../security';
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: Security.secret || 'No secret set...',
+      secret: Security.secret,
       signOptions: { expiresIn: `${parseInt(process.env.JWT_EXPIRES_IN_S || '60)', 10)}s` },
     }),
   ],

@@ -20,7 +20,7 @@ describe('Todo (e2e)', () => {
     console.warn(`could not delete database ${dbName}`);
   }
   process.env.DATABASE_NAME = dbName;
-  // we override here the default log behaviour for the database so we don't see sql messages
+  // we override here the default log behaviour for the database, so we don't see sql messages
   process.env.DATABASE_LOG = 'false';
 
   // temp values
@@ -62,7 +62,7 @@ describe('Todo (e2e)', () => {
     status = 400;
     answer = {
       statusCode: status,
-      message: 'The required field title is missing in the object!',
+      message: 'The required field description is missing in the object!',
       error: 'Bad Request',
     };
     await httpClient.exePost(httpClient.userToken, status, {}).expect(answer);
@@ -72,7 +72,7 @@ describe('Todo (e2e)', () => {
     status = 400;
     answer = {
       statusCode: status,
-      message: 'The required field title is missing in the object!',
+      message: 'The required field description is missing in the object!',
       error: 'Bad Request',
     };
     await httpClient.exePost(httpClient.userToken, status, { id: 1 }).expect(answer);
@@ -195,7 +195,6 @@ describe('Todo (e2e)', () => {
       });
 
     // delete not allowed
-    // changed 405 to 403 because of wrong initial implementation
     status = 403;
     answer = {
       statusCode: status,

@@ -195,11 +195,12 @@ describe('Todo (e2e)', () => {
       });
 
     // delete not allowed
-    status = 405;
+    // changed 405 to 403 because of wrong initial implementation
+    status = 403;
     answer = {
       statusCode: status,
       message: 'You have to be member of the role admin to call this method!',
-      error: 'Method Not Allowed',
+      error: 'Forbidden',
     };
     await httpClient.execDel(httpClient.userToken, status, -1).expect(answer);
 

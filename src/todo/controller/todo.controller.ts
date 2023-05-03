@@ -2,8 +2,8 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
-  MethodNotAllowedException,
   Param,
   ParseIntPipe,
   Patch,
@@ -149,7 +149,7 @@ export class TodoController {
   })
   async delete(@CurrentUser() user: UserEntity, @Param('id', ParseIntPipe) id: number): Promise<TodoDto> {
     if (!user.roles.some((role) => role === Constants.DELETE_ACCESS_ROLE)) {
-      throw new MethodNotAllowedException('You have to be member of the role admin to call this method!');
+      throw new ForbiddenException('You have to be member of the role admin to call this method!');
     }
     const todo = await this.todoService.delete(id);
     return TodoDto.ConvertEntityToDto(todo);

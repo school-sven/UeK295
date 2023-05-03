@@ -1,3 +1,17 @@
+image: node:18-alpine
+tags:
+  - docker
+
+.install_dependecies: &install_dependecies
+  - echo "Installing dependencies..."
+  - npm ci
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+  policy: pull
+
 stages:
   - lint
   - unit-test
@@ -6,44 +20,34 @@ stages:
 
 lint:
   stage: lint
-  image: node:18-alpine
-  tags:
-    - docker
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+    when: on_success
+    policy: pull-push
   script:
-    - echo "Running lint"
-    - npm ci
+    - *install_dependecies
+    - echo "Running linting..."
     - npm run lint
 
 unit-test:
   stage: unit-test
-  image: node:18-alpine
-  tags:
-    - docker
   script:
-    - echo "Running unit tests"
-    - npm ci
-    - echo "Running unit tests"
+    - *install_dependecies
+    - echo "Running unit tests..."
     - npm run test:cov
 
 e2e-test:
   stage: e2e-test
-  image: node:18-alpine
-  tags:
-    - docker
   script:
-    - echo "Running e2e tests"
-    - npm ci
-    - echo "Running e2e tests"
+    - *install_dependecies
+    - echo "Running end-to-end tests..."
     - npm run test:e2e
 
 build:
   stage: build
-  image: node:18-alpine
-  tags:
-    - docker
   script:
-    - echo "Running npm build"
-    - npm ci
-    - echo "Running npm build"
+    - *install_dependecies
+    - echo "Building project..."
     - npm run build
-

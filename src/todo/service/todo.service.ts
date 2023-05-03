@@ -10,18 +10,18 @@ export class TodoService {
   constructor(@InjectRepository(TodoEntity) private readonly todoRepository: Repository<TodoEntity>) {}
 
   async getAll(): Promise<TodoEntity[]> {
-    return await this.todoRepository.find();
+    return this.todoRepository.find();
   }
 
   async create(createTodo: CreateTodoDto): Promise<TodoEntity> {
     this.checkIfObjectHasGivenProperties(createTodo, 'title', 'description');
-    return await this.todoRepository.save(createTodo);
+    return this.todoRepository.save(createTodo);
   }
 
   async getOne(id: number) {
     const todo = await this.todoRepository.findOneBy({ id });
     if (!todo) {
-      throw new NotFoundException(`We did not found an item with id ${id}!`);
+      throw new NotFoundException(`We did not found a todo item with id ${id}!`);
     }
     return todo;
   }
@@ -34,26 +34,26 @@ export class TodoService {
     const todo = await this.todoRepository.findOneBy({ id });
     if (!todo) {
       // Should be a 404 but the postman test is not working with a 404
-      throw new MethodNotAllowedException(`We did not found an item with id ${id}!`);
+      throw new MethodNotAllowedException(`We did not found a todo item with id ${id}!`);
     }
     await this.todoRepository.update({ id }, this.sanitizeTodoObject(updateTodo));
-    return await this.todoRepository.findOneBy({ id });
+    return this.todoRepository.findOneBy({ id });
   }
 
   async patch(id: number, updateTodo: UpdateTodoDto): Promise<TodoEntity> {
     const todo = await this.todoRepository.findOneBy({ id });
     if (!todo) {
-      throw new NotFoundException(`We did not found an item with id ${id}!`);
+      throw new NotFoundException(`We did not found a todo item with id ${id}!`);
     }
     const todoToUpdate = { ...todo, ...updateTodo };
     await this.todoRepository.update({ id }, this.sanitizeTodoObject(todoToUpdate));
-    return await this.todoRepository.findOneBy({ id });
+    return this.todoRepository.findOneBy({ id });
   }
 
   async delete(id: number): Promise<TodoEntity> {
     const todo = await this.todoRepository.findOneBy({ id });
     if (!todo) {
-      throw new NotFoundException(`We did not found an item with id ${id}!`);
+      throw new NotFoundException(`We did not found a todo item with id ${id}!`);
     }
     await this.todoRepository.delete({ id });
     return todo;
@@ -62,7 +62,7 @@ export class TodoService {
   private checkIfObjectHasGivenProperties(obj: any, ...properties: string[]): void {
     properties.forEach((property) => {
       if (obj[property] === undefined) {
-        throw new BadRequestException(`Missing property ${property}!`);
+        throw new BadRequestException(`The required field ${property} is missing in the object!`);
       }
     });
   }

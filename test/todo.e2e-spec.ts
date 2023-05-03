@@ -62,7 +62,7 @@ describe('Todo (e2e)', () => {
     status = 400;
     answer = {
       statusCode: status,
-      message: 'The required field description is missing in the object!',
+      message: 'The required field title is missing in the object!',
       error: 'Bad Request',
     };
     await httpClient.exePost(httpClient.userToken, status, {}).expect(answer);
@@ -72,7 +72,7 @@ describe('Todo (e2e)', () => {
     status = 400;
     answer = {
       statusCode: status,
-      message: 'The required field description is missing in the object!',
+      message: 'The required field title is missing in the object!',
       error: 'Bad Request',
     };
     await httpClient.exePost(httpClient.userToken, status, { id: 1 }).expect(answer);
